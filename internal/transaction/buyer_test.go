@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"bou.ke/monkey"
 	"github.com/google/uuid"
 )
 
@@ -55,6 +56,11 @@ func TestBuyer_Create(t *testing.T) {
 	uuidSeller := uuid.MustParse("28551a5b-c62f-43bb-9893-3438bc6135df")
 	verifiedAt := time.Now()
 
+	createdAt := time.Now()
+	monkey.Patch(time.Now, func() time.Time {
+		return createdAt
+	})
+
 	type fields struct {
 		ID                    uuid.UUID
 		PhoneNumberVerifiedAt time.Time
@@ -69,7 +75,6 @@ func TestBuyer_Create(t *testing.T) {
 		want    Transaction
 		wantErr bool
 	}{
-		// TODO: Add test cases.
 		{
 			name: "buyer is not eligible",
 			fields: fields{
@@ -103,6 +108,9 @@ func TestBuyer_Create(t *testing.T) {
 					ID:                    uuidBuyer,
 					PhoneNumberVerifiedAt: verifiedAt,
 				},
+				CreatedBy: buyer,
+				CreatedAt: createdAt,
+				Status:    waitingForApproval,
 			},
 			wantErr: false,
 		},
@@ -121,6 +129,161 @@ func TestBuyer_Create(t *testing.T) {
 
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("Buyer.Create() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestBuyer_Accept(t *testing.T) {
+	trxUUID := uuid.New()
+
+	acceptedAt := time.Now()
+	monkey.Patch(time.Now, func() time.Time {
+		return acceptedAt
+	})
+
+	type fields struct {
+		ID                    uuid.UUID
+		PhoneNumberVerifiedAt time.Time
+	}
+	type args struct {
+		t Transaction
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    Transaction
+		wantErr bool
+	}{
+		{
+			name: "buyer accept transaction successfully",
+			fields: fields{
+				ID:                    uuid.New(),
+				PhoneNumberVerifiedAt: time.Now(),
+			},
+			args: args{
+				t: Transaction{
+					ID:        trxUUID,
+					CreatedBy: seller,
+				},
+			},
+			want: Transaction{
+				ID:         trxUUID,
+				CreatedBy:  seller,
+				AcceptedAt: acceptedAt,
+				AcceptedBy: buyer,
+			},
+			wantErr: false,
+		},
+		{
+			name: "buyer is not eligible because doesn't verified yet",
+			fields: fields{
+				ID: trxUUID,
+			},
+			args: args{
+				t: Transaction{
+					ID: trxUUID,
+				},
+			},
+			want:    Transaction{},
+			wantErr: true,
+		},
+		{
+			name: "buyer is not eligible because transaction is also created by buyer",
+			fields: fields{
+				ID:                    trxUUID,
+				PhoneNumberVerifiedAt: time.Now(),
+			},
+			args: args{
+				t: Transaction{
+					ID:        trxUUID,
+					CreatedBy: buyer,
+				},
+			},
+			want:    Transaction{},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			b := Buyer{
+				ID:                    tt.fields.ID,
+				PhoneNumberVerifiedAt: tt.fields.PhoneNumberVerifiedAt,
+			}
+			got, err := b.Accept(tt.args.t)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Buyer.Accept() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Buyer.Accept() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestBuyer_Reject(t *testing.T) {
+	trxUUID := uuid.New()
+
+	rejectedAt := time.Now()
+	monkey.Patch(time.Now, func() time.Time {
+		return rejectedAt
+	})
+
+	type fields struct {
+		ID                    uuid.UUID
+		PhoneNumberVerifiedAt time.Time
+	}
+	type args struct {
+		t      Transaction
+		reason string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    Transaction
+		wantErr bool
+	}{
+		{
+			name: "buyer reject transaction successfully",
+			fields: fields{
+				ID:                    uuid.New(),
+				PhoneNumberVerifiedAt: time.Now(),
+			},
+			args: args{
+				t: Transaction{
+					ID:        trxUUID,
+					CreatedBy: seller,
+				},
+				reason: "test",
+			},
+			want: Transaction{
+				ID:             trxUUID,
+				CreatedBy:      seller,
+				RejectedAt:     rejectedAt,
+				RejectedBy:     buyer,
+				RejectedReason: "test",
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			b := Buyer{
+				ID:                    tt.fields.ID,
+				PhoneNumberVerifiedAt: tt.fields.PhoneNumberVerifiedAt,
+			}
+			got, err := b.Reject(tt.args.t, tt.args.reason)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Buyer.Accept() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Buyer.Accept() = %+v, want %+v", got, tt.want)
 			}
 		})
 	}
