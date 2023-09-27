@@ -21,6 +21,7 @@ const (
 	waitingForPayment         // also means accepted
 	rejected
 	paid
+	expired
 
 	// after transfer by buyer
 	doneBySeller
@@ -57,7 +58,19 @@ type Transaction struct {
 	Status Status
 }
 
-// TODO: implement me
-func (t Transaction) VerifyLastStatus(currentStatus Status) bool {
-	return false
+func (t Transaction) VerifyLastStatus(updated Status) bool {
+	switch t.Status {
+	case waitingForApproval:
+		return (updated == waitingForPayment) || (updated == rejected)
+	case waitingForPayment:
+		return (updated == paid) || (updated == expired)
+	case paid:
+		return (updated == doneBySeller)
+	case doneBySeller:
+		return (updated == doneByBuyer)
+	case doneByBuyer:
+		return (updated == success)
+	default:
+		return false
+	}
 }
