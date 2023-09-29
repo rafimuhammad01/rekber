@@ -41,16 +41,26 @@ func (b Buyer) Accept(t Transaction) (Transaction, error) {
 		return Transaction{}, errors.New("failed to accept transaction: transaction should be created by seller to be accepted by buyer")
 	}
 
+	if isVerified := t.VerifyLastStatus(waitingForPayment); !isVerified {
+		return Transaction{}, errors.New("failed to accept transaction: transaction last status is not valid")
+	}
+
 	t.AcceptedAt = time.Now()
 	t.AcceptedBy = buyer
+	t.Status = paid
 
 	return t, nil
 }
 
 func (b Buyer) Reject(t Transaction, reason string) (Transaction, error) {
+	if isVerified := t.VerifyLastStatus(waitingForPayment); !isVerified {
+		return Transaction{}, errors.New("failed to reject transaction: transaction last status is not valid")
+	}
+
 	t.RejectedAt = time.Now()
 	t.RejectedBy = buyer
 	t.RejectedReason = reason
+	t.Status = rejected
 
 	return t, nil
 }

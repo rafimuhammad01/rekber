@@ -166,11 +166,13 @@ func TestBuyer_Accept(t *testing.T) {
 				t: Transaction{
 					ID:        trxUUID,
 					CreatedBy: seller,
+					Status:    waitingForApproval,
 				},
 			},
 			want: Transaction{
 				ID:         trxUUID,
 				CreatedBy:  seller,
+				Status:     paid,
 				AcceptedAt: acceptedAt,
 				AcceptedBy: buyer,
 			},
@@ -199,6 +201,22 @@ func TestBuyer_Accept(t *testing.T) {
 				t: Transaction{
 					ID:        trxUUID,
 					CreatedBy: buyer,
+				},
+			},
+			want:    Transaction{},
+			wantErr: true,
+		},
+		{
+			name: "transaction status is not waiting for approval",
+			fields: fields{
+				ID:                    uuid.New(),
+				PhoneNumberVerifiedAt: time.Now(),
+			},
+			args: args{
+				t: Transaction{
+					ID:        trxUUID,
+					CreatedBy: seller,
+					Status:    paid,
 				},
 			},
 			want:    Transaction{},
@@ -257,6 +275,7 @@ func TestBuyer_Reject(t *testing.T) {
 				t: Transaction{
 					ID:        trxUUID,
 					CreatedBy: seller,
+					Status:    waitingForApproval,
 				},
 				reason: "test",
 			},
@@ -266,8 +285,26 @@ func TestBuyer_Reject(t *testing.T) {
 				RejectedAt:     rejectedAt,
 				RejectedBy:     buyer,
 				RejectedReason: "test",
+				Status:         rejected,
 			},
 			wantErr: false,
+		},
+		{
+			name: "transaction status is not valid",
+			fields: fields{
+				ID:                    trxUUID,
+				PhoneNumberVerifiedAt: time.Now(),
+			},
+			args: args{
+				t: Transaction{
+					ID:        trxUUID,
+					CreatedBy: seller,
+					Status:    paid,
+				},
+				reason: "test",
+			},
+			want:    Transaction{},
+			wantErr: true,
 		},
 	}
 	for _, tt := range tests {
