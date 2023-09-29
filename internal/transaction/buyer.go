@@ -7,7 +7,6 @@ import (
 	"github.com/google/uuid"
 )
 
-// TODO: need to validate last status first before go to next state
 type Buyer struct {
 	ID                    uuid.UUID
 	PhoneNumberVerifiedAt time.Time
