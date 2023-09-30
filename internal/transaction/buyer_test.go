@@ -306,6 +306,23 @@ func TestBuyer_Reject(t *testing.T) {
 			want:    Transaction{},
 			wantErr: true,
 		},
+		{
+			name: "transaction is not created by seller",
+			fields: fields{
+				ID:                    uuid.New(),
+				PhoneNumberVerifiedAt: time.Now(),
+			},
+			args: args{
+				t: Transaction{
+					ID:        trxUUID,
+					CreatedBy: buyer,
+					Status:    waitingForApproval,
+				},
+				reason: "test",
+			},
+			want:    Transaction{},
+			wantErr: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
