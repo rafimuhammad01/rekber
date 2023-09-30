@@ -342,3 +342,92 @@ func TestBuyer_Reject(t *testing.T) {
 		})
 	}
 }
+
+func TestBuyer_Done(t *testing.T) {
+	trxUUID := uuid.New()
+
+	successAt := time.Now()
+	monkey.Patch(time.Now, func() time.Time {
+		return successAt
+	})
+
+	type fields struct {
+		ID                    uuid.UUID
+		PhoneNumberVerifiedAt time.Time
+	}
+	type args struct {
+		t Transaction
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    Transaction
+		wantErr bool
+	}{
+		{
+			name: "buyer set transaction to done successfully",
+			fields: fields{
+				ID:                    uuid.New(),
+				PhoneNumberVerifiedAt: time.Now(),
+			},
+			args: args{
+				t: Transaction{
+					ID:     trxUUID,
+					Status: doneBySeller,
+				},
+			},
+			want: Transaction{
+				ID:        trxUUID,
+				Status:    success,
+				SuccessAt: successAt,
+			},
+			wantErr: false,
+		},
+		{
+			name: "buyer is not eligible",
+			fields: fields{
+				ID: uuid.New(),
+			},
+			args: args{
+				t: Transaction{
+					ID:     trxUUID,
+					Status: doneBySeller,
+				},
+			},
+			want:    Transaction{},
+			wantErr: true,
+		},
+		{
+			name: "transaction last status is not valid",
+			fields: fields{
+				ID:                    uuid.New(),
+				PhoneNumberVerifiedAt: time.Now(),
+			},
+			args: args{
+				t: Transaction{
+					ID:     trxUUID,
+					Status: success,
+				},
+			},
+			want:    Transaction{},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			b := Buyer{
+				ID:                    tt.fields.ID,
+				PhoneNumberVerifiedAt: tt.fields.PhoneNumberVerifiedAt,
+			}
+			got, err := b.Done(tt.args.t)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Buyer.Done() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Buyer.Done() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

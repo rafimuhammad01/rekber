@@ -102,24 +102,14 @@ func TestTransaction_VerifyLastStatus(t *testing.T) {
 			want: true,
 		},
 		{
-			name: "status is paid, next to done by buyer",
+			name: "status is paid, next to success",
 			fields: fields{
 				Status: paid,
 			},
 			args: args{
-				update: doneByBuyer,
+				update: success,
 			},
 			want: false,
-		},
-		{
-			name: "status is done by seller, next to done by buyer",
-			fields: fields{
-				Status: doneBySeller,
-			},
-			args: args{
-				update: doneByBuyer,
-			},
-			want: true,
 		},
 		{
 			name: "status is done by seller, next to success",
@@ -129,25 +119,15 @@ func TestTransaction_VerifyLastStatus(t *testing.T) {
 			args: args{
 				update: success,
 			},
-			want: false,
-		},
-		{
-			name: "status is done by buyer, next to success",
-			fields: fields{
-				Status: doneByBuyer,
-			},
-			args: args{
-				update: success,
-			},
 			want: true,
 		},
 		{
-			name: "status is done by buyer, next to waiting for payment",
+			name: "status is done by seller, next to paid",
 			fields: fields{
-				Status: doneByBuyer,
+				Status: doneBySeller,
 			},
 			args: args{
-				update: waitingForPayment,
+				update: paid,
 			},
 			want: false,
 		},

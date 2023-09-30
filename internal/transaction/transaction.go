@@ -25,7 +25,6 @@ const (
 
 	// after transfer by buyer
 	doneBySeller
-	doneByBuyer
 
 	// transfer to seller
 	success
@@ -54,6 +53,10 @@ type Transaction struct {
 	// Payment information
 	PaidAt time.Time
 
+	// Done information
+	SuccessAt      time.Time
+	DoneBySellerAt time.Time
+
 	// State information
 	Status Status
 }
@@ -67,8 +70,6 @@ func (t Transaction) VerifyLastStatus(updated Status) bool {
 	case paid:
 		return (updated == doneBySeller)
 	case doneBySeller:
-		return (updated == doneByBuyer)
-	case doneByBuyer:
 		return (updated == success)
 	default:
 		return false

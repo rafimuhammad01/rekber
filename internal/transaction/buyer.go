@@ -18,7 +18,7 @@ func (b Buyer) IsEligible() bool {
 
 func (b Buyer) Create(s Seller) (Transaction, error) {
 	if !b.IsEligible() {
-		return Transaction{}, errors.New("user is not eligible")
+		return Transaction{}, errors.New("buyer is not eligible")
 	}
 
 	return Transaction{
@@ -33,14 +33,14 @@ func (b Buyer) Create(s Seller) (Transaction, error) {
 
 func (b Buyer) Accept(t Transaction) (Transaction, error) {
 	if !b.IsEligible() {
-		return Transaction{}, errors.New("user is not eligible")
+		return Transaction{}, errors.New("buyer is not eligible")
 	}
 
 	if t.CreatedBy != seller {
 		return Transaction{}, errors.New("transaction should be created by seller to be accepted by buyer")
 	}
 
-	if isVerified := t.VerifyLastStatus(waitingForPayment); !isVerified {
+	if !t.VerifyLastStatus(waitingForPayment) {
 		return Transaction{}, errors.New("transaction last status is not valid")
 	}
 
@@ -52,7 +52,7 @@ func (b Buyer) Accept(t Transaction) (Transaction, error) {
 }
 
 func (b Buyer) Reject(t Transaction, reason string) (Transaction, error) {
-	if isVerified := t.VerifyLastStatus(rejected); !isVerified {
+	if !t.VerifyLastStatus(rejected) {
 		return Transaction{}, errors.New("transaction last status is not valid")
 	}
 
@@ -64,6 +64,21 @@ func (b Buyer) Reject(t Transaction, reason string) (Transaction, error) {
 	t.RejectedBy = buyer
 	t.RejectedReason = reason
 	t.Status = rejected
+
+	return t, nil
+}
+
+func (b Buyer) Done(t Transaction) (Transaction, error) {
+	if !b.IsEligible() {
+		return Transaction{}, errors.New("buyer is not eligible")
+	}
+
+	if !t.VerifyLastStatus(success) {
+		return Transaction{}, errors.New("transaction last status is not valid")
+	}
+
+	t.Status = success
+	t.SuccessAt = time.Now()
 
 	return t, nil
 }

@@ -26,7 +26,7 @@ func (s Seller) Accept(t Transaction) (Transaction, error) {
 		return Transaction{}, errors.New("transaction created is not by buyer")
 	}
 
-	if isVerified := t.VerifyLastStatus(waitingForPayment); !isVerified {
+	if !t.VerifyLastStatus(waitingForPayment) {
 		return Transaction{}, errors.New("transaction last status is not valid")
 	}
 
@@ -38,7 +38,7 @@ func (s Seller) Accept(t Transaction) (Transaction, error) {
 }
 
 func (b Seller) Reject(t Transaction, reason string) (Transaction, error) {
-	if isVerified := t.VerifyLastStatus(rejected); !isVerified {
+	if !t.VerifyLastStatus(rejected) {
 		return Transaction{}, errors.New("transaction last status is not valid")
 	}
 
