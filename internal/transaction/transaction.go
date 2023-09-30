@@ -27,7 +27,7 @@ const (
 	doneBySeller
 
 	// transfer to seller
-	success
+	success // also means done by buyer
 )
 
 type Transaction struct {
