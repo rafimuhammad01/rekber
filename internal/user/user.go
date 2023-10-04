@@ -24,8 +24,10 @@ type BankAccount struct {
 type User struct {
 	ID                    uuid.UUID
 	PhoneNumber           string
+	Name                  string
 	PhoneNumberVerifiedAt time.Time
 	BankAccount           BankAccount
+	CreatedAt             time.Time
 }
 
 func (u User) GenerateToken() (Token, error) {
