@@ -165,3 +165,55 @@ func TestTransaction_VerifyLastStatus(t *testing.T) {
 		})
 	}
 }
+
+func TestStatus_String(t *testing.T) {
+	tests := []struct {
+		name string
+		s    Status
+		want string
+	}{
+		// TODO: Add test cases.
+		{
+			name: "waiting for approval",
+			s:    waitingForApproval,
+			want: "waiting for approval",
+		},
+		{
+			name: "waiting for payment",
+			s:    waitingForPayment,
+			want: "waiting for payment",
+		},
+		{
+			name: "rejected",
+			s:    rejected,
+			want: "rejected",
+		},
+		{
+			name: "paid",
+			s:    paid,
+			want: "paid",
+		},
+		{
+			name: "expired",
+			s:    expired,
+			want: "expired",
+		},
+		{
+			name: "done by seller",
+			s:    doneBySeller,
+			want: "done by seller",
+		},
+		{
+			name: "success",
+			s:    success,
+			want: "success",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.s.String(); got != tt.want {
+				t.Errorf("Status.String() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

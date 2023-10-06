@@ -16,7 +16,7 @@ func TestToken_validateAccessToken(t *testing.T) {
 		AccessTokenDuration:     time.Duration(time.Hour),
 		JWTAccessTokenSecretKey: "test-secret-key",
 	})
-	secretDecoded, _ := base64.RawURLEncoding.DecodeString("hgxn0WtzqGtZb1mFCjrJ3zqq3Wg_u4fhoziVAo_5hWc")
+	secretDecoded, _ := base64.RawURLEncoding.DecodeString("vtV-qYPVoJ8dCEoR98aBr5XsA0gsJwkvQdRpzY7UQQU")
 
 	type fields struct {
 		AccessToken  string
@@ -32,10 +32,10 @@ func TestToken_validateAccessToken(t *testing.T) {
 		{
 			name: "success validate access token",
 			fields: fields{
-				AccessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0aW5nLWFwcCIsImV4cCI6MTY5NjExMTIwMCwidXNlcl9pZCI6ImU0MWYxNmVmLTA1MzAtNDJlZC04YjAyLTRhZTJmYTRjNGRjMiJ9.hgxn0WtzqGtZb1mFCjrJ3zqq3Wg_u4fhoziVAo_5hWc",
+				AccessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0aW5nLWFwcCIsImV4cCI6MjU0ODYyNzIwMCwidXNlcl9pZCI6ImU0MWYxNmVmLTA1MzAtNDJlZC04YjAyLTRhZTJmYTRjNGRjMiJ9.vtV-qYPVoJ8dCEoR98aBr5XsA0gsJwkvQdRpzY7UQQU",
 			},
 			want: &jwt.Token{
-				Raw:    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0aW5nLWFwcCIsImV4cCI6MTY5NjExMTIwMCwidXNlcl9pZCI6ImU0MWYxNmVmLTA1MzAtNDJlZC04YjAyLTRhZTJmYTRjNGRjMiJ9.hgxn0WtzqGtZb1mFCjrJ3zqq3Wg_u4fhoziVAo_5hWc",
+				Raw:    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0aW5nLWFwcCIsImV4cCI6MjU0ODYyNzIwMCwidXNlcl9pZCI6ImU0MWYxNmVmLTA1MzAtNDJlZC04YjAyLTRhZTJmYTRjNGRjMiJ9.vtV-qYPVoJ8dCEoR98aBr5XsA0gsJwkvQdRpzY7UQQU",
 				Method: jwt.SigningMethodHS256,
 				Header: map[string]interface{}{
 					"alg": "HS256",
@@ -43,7 +43,7 @@ func TestToken_validateAccessToken(t *testing.T) {
 				},
 				Claims: &Claims{
 					RegisteredClaims: jwt.RegisteredClaims{
-						ExpiresAt: jwt.NewNumericDate(time.Unix(1696111200, 0)),
+						ExpiresAt: jwt.NewNumericDate(time.Unix(2548627200, 0)),
 						Issuer:    "testing-app",
 					},
 					UserID: "e41f16ef-0530-42ed-8b02-4ae2fa4c4dc2",
@@ -92,7 +92,7 @@ func TestToken_ParseAccessToken(t *testing.T) {
 		{
 			name: "success to parse access token",
 			fields: fields{
-				AccessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0aW5nLWFwcCIsImV4cCI6MTY5NjExMTIwMCwidXNlcl9pZCI6ImU0MWYxNmVmLTA1MzAtNDJlZC04YjAyLTRhZTJmYTRjNGRjMiJ9.hgxn0WtzqGtZb1mFCjrJ3zqq3Wg_u4fhoziVAo_5hWc",
+				AccessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0aW5nLWFwcCIsImV4cCI6MjU0ODYyNzIwMCwidXNlcl9pZCI6ImU0MWYxNmVmLTA1MzAtNDJlZC04YjAyLTRhZTJmYTRjNGRjMiJ9.vtV-qYPVoJ8dCEoR98aBr5XsA0gsJwkvQdRpzY7UQQU",
 			},
 			want: User{
 				ID: uuid.MustParse("e41f16ef-0530-42ed-8b02-4ae2fa4c4dc2"),
@@ -123,7 +123,7 @@ func TestToken_validateRefreshToken(t *testing.T) {
 		RefreshTokenDuration:     time.Duration(time.Hour),
 		JWTRefreshTokenSecretKey: "test-secret-key",
 	})
-	secretDecoded, _ := base64.RawURLEncoding.DecodeString("hgxn0WtzqGtZb1mFCjrJ3zqq3Wg_u4fhoziVAo_5hWc")
+	secretDecoded, _ := base64.RawURLEncoding.DecodeString("vtV-qYPVoJ8dCEoR98aBr5XsA0gsJwkvQdRpzY7UQQU")
 
 	type fields struct {
 		AccessToken  string
@@ -138,10 +138,10 @@ func TestToken_validateRefreshToken(t *testing.T) {
 		{
 			name: "success validate refresh token",
 			fields: fields{
-				RefreshToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0aW5nLWFwcCIsImV4cCI6MTY5NjExMTIwMCwidXNlcl9pZCI6ImU0MWYxNmVmLTA1MzAtNDJlZC04YjAyLTRhZTJmYTRjNGRjMiJ9.hgxn0WtzqGtZb1mFCjrJ3zqq3Wg_u4fhoziVAo_5hWc",
+				RefreshToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0aW5nLWFwcCIsImV4cCI6MjU0ODYyNzIwMCwidXNlcl9pZCI6ImU0MWYxNmVmLTA1MzAtNDJlZC04YjAyLTRhZTJmYTRjNGRjMiJ9.vtV-qYPVoJ8dCEoR98aBr5XsA0gsJwkvQdRpzY7UQQU",
 			},
 			want: &jwt.Token{
-				Raw:    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0aW5nLWFwcCIsImV4cCI6MTY5NjExMTIwMCwidXNlcl9pZCI6ImU0MWYxNmVmLTA1MzAtNDJlZC04YjAyLTRhZTJmYTRjNGRjMiJ9.hgxn0WtzqGtZb1mFCjrJ3zqq3Wg_u4fhoziVAo_5hWc",
+				Raw:    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0aW5nLWFwcCIsImV4cCI6MjU0ODYyNzIwMCwidXNlcl9pZCI6ImU0MWYxNmVmLTA1MzAtNDJlZC04YjAyLTRhZTJmYTRjNGRjMiJ9.vtV-qYPVoJ8dCEoR98aBr5XsA0gsJwkvQdRpzY7UQQU",
 				Method: jwt.SigningMethodHS256,
 				Header: map[string]interface{}{
 					"alg": "HS256",
@@ -149,7 +149,7 @@ func TestToken_validateRefreshToken(t *testing.T) {
 				},
 				Claims: &Claims{
 					RegisteredClaims: jwt.RegisteredClaims{
-						ExpiresAt: jwt.NewNumericDate(time.Unix(1696111200, 0)),
+						ExpiresAt: jwt.NewNumericDate(time.Unix(2548627200, 0)),
 						Issuer:    "testing-app",
 					},
 					UserID: "e41f16ef-0530-42ed-8b02-4ae2fa4c4dc2",
@@ -168,11 +168,11 @@ func TestToken_validateRefreshToken(t *testing.T) {
 			}
 			got, err := tr.validateRefreshToken()
 			if (err != nil) != tt.wantErr {
-				t.Errorf("Token.validateRefreshToken() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("Token.validateRefreshToken() error = %#v, wantErr %#v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Token.validateRefreshToken() = %v, want %v", got, tt.want)
+				t.Errorf("Token.validateRefreshToken() = %#v, want %#v", got, tt.want)
 			}
 		})
 	}
@@ -197,7 +197,7 @@ func TestToken_ParseRefreshToken(t *testing.T) {
 		{
 			name: "success to parse access token",
 			fields: fields{
-				RefreshToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0aW5nLWFwcCIsImV4cCI6MTY5NjExMTIwMCwidXNlcl9pZCI6ImU0MWYxNmVmLTA1MzAtNDJlZC04YjAyLTRhZTJmYTRjNGRjMiJ9.hgxn0WtzqGtZb1mFCjrJ3zqq3Wg_u4fhoziVAo_5hWc",
+				RefreshToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0aW5nLWFwcCIsImV4cCI6MjU0ODYyNzIwMCwidXNlcl9pZCI6ImU0MWYxNmVmLTA1MzAtNDJlZC04YjAyLTRhZTJmYTRjNGRjMiJ9.vtV-qYPVoJ8dCEoR98aBr5XsA0gsJwkvQdRpzY7UQQU",
 			},
 			want: User{
 				ID: uuid.MustParse("e41f16ef-0530-42ed-8b02-4ae2fa4c4dc2"),

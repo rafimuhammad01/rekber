@@ -30,6 +30,27 @@ const (
 	success // also means done by buyer
 )
 
+func (s Status) String() string {
+	switch s {
+	case waitingForApproval:
+		return "waiting for approval"
+	case waitingForPayment:
+		return "waiting for payment"
+	case rejected:
+		return "rejected"
+	case paid:
+		return "paid"
+	case expired:
+		return "expired"
+	case doneBySeller:
+		return "done by seller"
+	case success:
+		return "success"
+	default:
+		return ""
+	}
+}
+
 type Transaction struct {
 	ID uuid.UUID
 

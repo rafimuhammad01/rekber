@@ -1,7 +1,7 @@
 package transaction
 
 import (
-	"errors"
+	"rekber/ierr"
 	"time"
 
 	"github.com/google/uuid"
@@ -18,7 +18,7 @@ func (b Buyer) IsEligible() bool {
 
 func (b Buyer) Create(s Seller) (Transaction, error) {
 	if !b.IsEligible() {
-		return Transaction{}, errors.New("buyer is not eligible")
+		return Transaction{}, ierr.BuyerIsNotEligible{ID: b.ID, Reason: "phone number is not verified yet"}
 	}
 
 	return Transaction{
@@ -33,15 +33,18 @@ func (b Buyer) Create(s Seller) (Transaction, error) {
 
 func (b Buyer) Accept(t Transaction) (Transaction, error) {
 	if !b.IsEligible() {
-		return Transaction{}, errors.New("buyer is not eligible")
+		return Transaction{}, ierr.BuyerIsNotEligible{ID: b.ID, Reason: "phone number is not verified yet"}
 	}
 
 	if t.CreatedBy != seller {
-		return Transaction{}, errors.New("transaction should be created by seller to be accepted by buyer")
+		return Transaction{}, ierr.TransactionNotCreatedBySeller{}
 	}
 
 	if !t.VerifyLastStatus(waitingForPayment) {
-		return Transaction{}, errors.New("transaction last status is not valid")
+		return Transaction{}, ierr.TransactionStatusNotValid{
+			LastStatus: t.Status.String(),
+			NewStatus:  waitingForPayment.String(),
+		}
 	}
 
 	t.AcceptedAt = time.Now()
@@ -53,11 +56,14 @@ func (b Buyer) Accept(t Transaction) (Transaction, error) {
 
 func (b Buyer) Reject(t Transaction, reason string) (Transaction, error) {
 	if !t.VerifyLastStatus(rejected) {
-		return Transaction{}, errors.New("transaction last status is not valid")
+		return Transaction{}, ierr.TransactionStatusNotValid{
+			LastStatus: t.Status.String(),
+			NewStatus:  rejected.String(),
+		}
 	}
 
 	if t.CreatedBy != seller {
-		return Transaction{}, errors.New("transaction is not created by seller")
+		return Transaction{}, ierr.TransactionNotCreatedBySeller{}
 	}
 
 	t.RejectedAt = time.Now()
@@ -70,11 +76,14 @@ func (b Buyer) Reject(t Transaction, reason string) (Transaction, error) {
 
 func (b Buyer) Done(t Transaction) (Transaction, error) {
 	if !b.IsEligible() {
-		return Transaction{}, errors.New("buyer is not eligible")
+		return Transaction{}, ierr.BuyerIsNotEligible{ID: b.ID, Reason: "phone number is not verified yet"}
 	}
 
 	if !t.VerifyLastStatus(success) {
-		return Transaction{}, errors.New("transaction last status is not valid")
+		return Transaction{}, ierr.TransactionStatusNotValid{
+			LastStatus: t.Status.String(),
+			NewStatus:  success.String(),
+		}
 	}
 
 	t.Status = success

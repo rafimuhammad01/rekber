@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"rekber/config"
+	"rekber/http"
 	userHandlerHTTP "rekber/http/user"
 	userService "rekber/internal/user"
 	"rekber/postgres"
@@ -42,7 +43,10 @@ func main() {
 		config.Get().PSQLSSLMode,
 	)
 
-	app := fiber.New()
+	app := fiber.New(fiber.Config{
+		// Override default error handler
+		ErrorHandler: http.ErrorHandler,
+	})
 	app.Use(logger.New())
 
 	api := app.Group("/api")

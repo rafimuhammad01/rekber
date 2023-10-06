@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"rekber/ierr"
 	"rekber/internal/user"
 	"rekber/postgres/model"
 
@@ -18,7 +19,7 @@ func (u Repository) GetByPhoneNumber(ctx context.Context, phoneNumber string) (u
 	var usr model.User
 	if err := u.db.GetContext(ctx, &usr, "SELECT * FROM users WHERE phone_number = $1", phoneNumber); err != nil {
 		if err == sql.ErrNoRows {
-			return user.User{}, fmt.Errorf("user with phone number %v not found", phoneNumber)
+			return user.User{}, ierr.UserNotFound{PhoneNumber: phoneNumber}
 		}
 
 		return user.User{}, fmt.Errorf("failed to query from database: %w", err)
