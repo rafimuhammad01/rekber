@@ -20,3 +20,17 @@ func (u UserNotFound) HTTPStatusCode() int {
 func (u UserNotFound) HTTPMessage() string {
 	return u.Error()
 }
+
+type JWTError struct{}
+
+func (u JWTError) Error() string {
+	return "invalid or expired credential"
+}
+
+func (u JWTError) HTTPMessage() string {
+	return u.Error()
+}
+
+func (u JWTError) HTTPStatusCode() int {
+	return http.StatusUnauthorized
+}
