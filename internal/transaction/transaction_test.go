@@ -208,6 +208,11 @@ func TestStatus_String(t *testing.T) {
 			s:    success,
 			want: "success",
 		},
+		{
+			name: "unknown status",
+			s:    0,
+			want: "",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
