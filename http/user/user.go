@@ -70,16 +70,16 @@ func (h Handler) Register(c *fiber.Ctx) error {
 func (h Handler) AuthMiddleware(c *fiber.Ctx) error {
 	authHeader := c.Get("authorization")
 	if authHeader == "" {
-		return ierr.Unauthorized{Reason: "authorization header not found"}
+		return ierr.AuthorizationHeaderNotFound{}
 	}
 
 	token := strings.Split(authHeader, " ")
 	if len(token) != 2 {
-		return ierr.Unauthorized{Reason: "token is not provided"}
+		return ierr.TokenIsNotProvided{}
 	}
 
 	if strings.ToLower(token[0]) != "bearer" {
-		return ierr.Unauthorized{Reason: "token not using bearer"}
+		return ierr.TokenIsNotProvided{}
 	}
 
 	userToken := user.Token{
