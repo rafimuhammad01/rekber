@@ -1,12 +1,12 @@
 package transaction
 
 import (
+	"github.com/agiledragon/gomonkey"
 	"math/rand"
 	"reflect"
 	"testing"
 	"time"
 
-	"bou.ke/monkey"
 	"github.com/google/uuid"
 )
 
@@ -57,7 +57,7 @@ func TestBuyer_Create(t *testing.T) {
 	verifiedAt := time.Now()
 
 	createdAt := time.Now()
-	monkey.Patch(time.Now, func() time.Time {
+	gomonkey.ApplyFunc(time.Now, func() time.Time {
 		return createdAt
 	})
 
@@ -138,7 +138,7 @@ func TestBuyer_Accept(t *testing.T) {
 	trxUUID := uuid.New()
 
 	acceptedAt := time.Now()
-	monkey.Patch(time.Now, func() time.Time {
+	gomonkey.ApplyFunc(time.Now, func() time.Time {
 		return acceptedAt
 	})
 
@@ -246,7 +246,7 @@ func TestBuyer_Reject(t *testing.T) {
 	trxUUID := uuid.New()
 
 	rejectedAt := time.Now()
-	monkey.Patch(time.Now, func() time.Time {
+	gomonkey.ApplyFunc(time.Now, func() time.Time {
 		return rejectedAt
 	})
 
@@ -347,7 +347,7 @@ func TestBuyer_Done(t *testing.T) {
 	trxUUID := uuid.New()
 
 	successAt := time.Now()
-	monkey.Patch(time.Now, func() time.Time {
+	gomonkey.ApplyFunc(time.Now, func() time.Time {
 		return successAt
 	})
 

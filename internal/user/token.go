@@ -24,7 +24,7 @@ func (t Token) validateAccessToken() (*jwt.Token, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, ierr.JWTError{}
 		}
-		return []byte(config.Get().JWTAccessTokenSecretKey), nil
+		return []byte(config.Get().JWT.AccessToken.SecretKey), nil
 	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse access token: %w", ierr.JWTError{})
@@ -55,7 +55,7 @@ func (t Token) validateRefreshToken() (*jwt.Token, error) {
 			return nil, ierr.JWTError{}
 		}
 
-		return []byte(config.Get().JWTRefreshTokenSecretKey), nil
+		return []byte(config.Get().JWT.RefreshToken.SecretKey), nil
 	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse refresh token: %w", ierr.JWTError{})

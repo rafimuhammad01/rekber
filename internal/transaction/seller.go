@@ -37,7 +37,7 @@ func (s Seller) Accept(t Transaction) (Transaction, error) {
 	return t, nil
 }
 
-func (b Seller) Reject(t Transaction, reason string) (Transaction, error) {
+func (s Seller) Reject(t Transaction, reason string) (Transaction, error) {
 	if !t.VerifyLastStatus(rejected) {
 		return Transaction{}, errors.New("transaction last status is not valid")
 	}

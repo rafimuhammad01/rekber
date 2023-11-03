@@ -13,7 +13,7 @@ type Buyer struct {
 }
 
 func (b Buyer) IsEligible() bool {
-	return (!b.PhoneNumberVerifiedAt.IsZero())
+	return !b.PhoneNumberVerifiedAt.IsZero()
 }
 
 func (b Buyer) Create(s Seller) (Transaction, error) {

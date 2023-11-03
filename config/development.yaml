@@ -1,0 +1,19 @@
+app:
+  port: 8080
+  name: "rekber-app"
+
+jwt:
+  access_token:
+    duration: "2h"
+    secret_key: "test-access-token"
+  refresh_token:
+    duration: "168h" # 7 days
+    secret_key: "test-refresh-token"
+
+psql:
+  host: "localhost"
+  port: 5432
+  db_name: "postgres"
+  user_name: "postgres"
+  password: "rekberapp"
+  ssl_mode: "disable"

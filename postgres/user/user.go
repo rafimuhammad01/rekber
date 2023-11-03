@@ -3,6 +3,7 @@ package User
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"rekber/ierr"
 	"rekber/internal/user"
@@ -18,7 +19,7 @@ type Repository struct {
 func (u Repository) GetByPhoneNumber(ctx context.Context, phoneNumber string) (user.User, error) {
 	var usr model.User
 	if err := u.db.GetContext(ctx, &usr, "SELECT * FROM users WHERE phone_number = $1", phoneNumber); err != nil {
-		if err == sql.ErrNoRows {
+		if errors.Is(err, sql.ErrNoRows) {
 			return user.User{}, ierr.UserNotFound{PhoneNumber: phoneNumber}
 		}
 

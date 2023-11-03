@@ -11,24 +11,37 @@ var (
 	conf *Config
 )
 
-type Config struct {
-	AppName string `mapstructure:"app_name"`
-	Port    string `mapstructure:"port"`
+type (
+	Config struct {
+		App  AppConfig  `mapstructure:"app"`
+		JWT  JWTConfig  `mapstructure:"jwt"`
+		PSQL PSQLConfig `mapstructure:"psql"`
+	}
 
-	// JWT
-	AccessTokenDuration      time.Duration `mapstructure:"access_token_duration"`
-	RefreshTokenDuration     time.Duration `mapstructure:"refresh_token_duration"`
-	JWTAccessTokenSecretKey  string        `mapstructure:"jwt_access_token_secret_key"`
-	JWTRefreshTokenSecretKey string        `mapstructure:"jwt_refresh_token_secret_key"`
+	AppConfig struct {
+		Name string `mapstructure:"name"`
+		Port string `mapstructure:"port"`
+	}
 
-	// PSQL
-	PSQLHost     string `mapstructure:"psql_host"`
-	PSQLPort     string `mapstructure:"psql_port"`
-	PSQLUserName string `mapstructure:"psql_username"`
-	PSQLDBName   string `mapstructure:"psql_db_name"`
-	PSQLPassword string `mapstructure:"psql_password"`
-	PSQLSSLMode  string `mapstructure:"psql_ssl_mode"`
-}
+	JWTConfig struct {
+		AccessToken  TokenConfig `mapstructure:"access_token"`
+		RefreshToken TokenConfig `mapstructure:"refresh_token"`
+	}
+
+	TokenConfig struct {
+		Duration  time.Duration `maspstructure:"duration"`
+		SecretKey string        `maspstructure:"secret_key"`
+	}
+
+	PSQLConfig struct {
+		Host     string `mapstructure:"host"`
+		Port     int    `mapstructure:"port"`
+		UserName string `mapstructure:"user_name"`
+		Password string `mapstructure:"password"`
+		DBName   string `mapstructure:"db_name"`
+		SSLMode  string `mapstructure:"ssl_mode"`
+	}
+)
 
 func Get() *Config {
 	return conf
@@ -40,9 +53,9 @@ func Set(c Config) {
 }
 
 func SetFromFile(fileName string) {
-	viper.SetConfigName(fileName)   // name of config file (without extension)
-	viper.SetConfigType("json")     // REQUIRED if the config file does not have the extension in the name
-	viper.AddConfigPath("./config") // path to look for the config file in
+	viper.SetConfigName(fileName) // name of config file (without extension)
+	viper.SetConfigType("yaml")   // REQUIRED if the config file does not have the extension in the name
+	viper.AddConfigPath("config") // path to look for the config file in
 
 	err := viper.ReadInConfig() // Find and read the config file
 	if err != nil {

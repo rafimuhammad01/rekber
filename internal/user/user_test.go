@@ -1,12 +1,12 @@
 package user
 
 import (
+	"github.com/agiledragon/gomonkey"
 	"reflect"
 	"rekber/config"
 	"testing"
 	"time"
 
-	"bou.ke/monkey"
 	"github.com/google/uuid"
 )
 
@@ -14,7 +14,7 @@ func TestUser_generateAccessToken(t *testing.T) {
 	layoutFormat := "2006-01-02 15:04:05"
 	value := "2023-09-30 21:00:00"
 	timeNow, _ := time.Parse(layoutFormat, value)
-	monkey.Patch(time.Now, func() time.Time {
+	gomonkey.ApplyFunc(time.Now, func() time.Time {
 		return timeNow
 	})
 
@@ -36,9 +36,15 @@ func TestUser_generateAccessToken(t *testing.T) {
 		{
 			name: "successfully generate access token",
 			conf: config.Config{
-				AppName:                 "testing-app",
-				AccessTokenDuration:     time.Duration(time.Hour),
-				JWTAccessTokenSecretKey: "test-secret-key",
+				App: config.AppConfig{
+					Name: "testing-app",
+				},
+				JWT: config.JWTConfig{
+					AccessToken: config.TokenConfig{
+						Duration:  time.Hour,
+						SecretKey: "test-secret-key",
+					},
+				},
 			},
 			fields: fields{
 				ID:                    userUUID,
@@ -76,7 +82,7 @@ func TestUser_generateRefreshToken(t *testing.T) {
 	layoutFormat := "2006-01-02 15:04:05"
 	value := "2023-09-30 21:00:00"
 	timeNow, _ := time.Parse(layoutFormat, value)
-	monkey.Patch(time.Now, func() time.Time {
+	gomonkey.ApplyFunc(time.Now, func() time.Time {
 		return timeNow
 	})
 
@@ -98,9 +104,15 @@ func TestUser_generateRefreshToken(t *testing.T) {
 		{
 			name: "successfully generate refresh token",
 			conf: config.Config{
-				AppName:                  "testing-app",
-				RefreshTokenDuration:     time.Duration(time.Hour),
-				JWTRefreshTokenSecretKey: "test-secret-key",
+				App: config.AppConfig{
+					Name: "testing-app",
+				},
+				JWT: config.JWTConfig{
+					RefreshToken: config.TokenConfig{
+						Duration:  time.Hour,
+						SecretKey: "test-secret-key",
+					},
+				},
 			},
 			fields: fields{
 				ID:                    userUUID,
@@ -138,16 +150,24 @@ func TestUser_GenerateToken(t *testing.T) {
 	layoutFormat := "2006-01-02 15:04:05"
 	value := "2023-09-30 21:00:00"
 	timeNow, _ := time.Parse(layoutFormat, value)
-	monkey.Patch(time.Now, func() time.Time {
+	gomonkey.ApplyFunc(time.Now, func() time.Time {
 		return timeNow
 	})
 
 	config.Set(config.Config{
-		AppName:                  "testing-app",
-		AccessTokenDuration:      time.Duration(time.Hour),
-		JWTAccessTokenSecretKey:  "test-secret-key",
-		RefreshTokenDuration:     time.Duration(time.Hour),
-		JWTRefreshTokenSecretKey: "test-secret-key",
+		App: config.AppConfig{
+			Name: "testing-app",
+		},
+		JWT: config.JWTConfig{
+			AccessToken: config.TokenConfig{
+				Duration:  time.Hour,
+				SecretKey: "test-secret-key",
+			},
+			RefreshToken: config.TokenConfig{
+				Duration:  time.Hour,
+				SecretKey: "test-secret-key",
+			},
+		},
 	})
 
 	userUUID := uuid.MustParse("e41f16ef-0530-42ed-8b02-4ae2fa4c4dc2")

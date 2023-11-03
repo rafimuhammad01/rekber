@@ -13,8 +13,12 @@ import (
 
 func TestToken_validateAccessToken(t *testing.T) {
 	config.Set(config.Config{
-		AccessTokenDuration:     time.Duration(time.Hour),
-		JWTAccessTokenSecretKey: "test-secret-key",
+		JWT: config.JWTConfig{
+			AccessToken: config.TokenConfig{
+				Duration:  time.Hour,
+				SecretKey: "test-secret-key",
+			},
+		},
 	})
 	secretDecoded, _ := base64.RawURLEncoding.DecodeString("vtV-qYPVoJ8dCEoR98aBr5XsA0gsJwkvQdRpzY7UQQU")
 
@@ -75,8 +79,12 @@ func TestToken_validateAccessToken(t *testing.T) {
 
 func TestToken_ParseAccessToken(t *testing.T) {
 	config.Set(config.Config{
-		AccessTokenDuration:     time.Duration(time.Hour),
-		JWTAccessTokenSecretKey: "test-secret-key",
+		JWT: config.JWTConfig{
+			AccessToken: config.TokenConfig{
+				Duration:  time.Hour,
+				SecretKey: "test-secret-key",
+			},
+		},
 	})
 
 	type fields struct {
@@ -120,8 +128,12 @@ func TestToken_ParseAccessToken(t *testing.T) {
 
 func TestToken_validateRefreshToken(t *testing.T) {
 	config.Set(config.Config{
-		RefreshTokenDuration:     time.Duration(time.Hour),
-		JWTRefreshTokenSecretKey: "test-secret-key",
+		JWT: config.JWTConfig{
+			RefreshToken: config.TokenConfig{
+				Duration:  time.Hour,
+				SecretKey: "test-secret-key",
+			},
+		},
 	})
 	secretDecoded, _ := base64.RawURLEncoding.DecodeString("vtV-qYPVoJ8dCEoR98aBr5XsA0gsJwkvQdRpzY7UQQU")
 
@@ -180,8 +192,12 @@ func TestToken_validateRefreshToken(t *testing.T) {
 
 func TestToken_ParseRefreshToken(t *testing.T) {
 	config.Set(config.Config{
-		RefreshTokenDuration:     time.Duration(time.Hour),
-		JWTRefreshTokenSecretKey: "test-secret-key",
+		JWT: config.JWTConfig{
+			RefreshToken: config.TokenConfig{
+				Duration:  time.Hour,
+				SecretKey: "test-secret-key",
+			},
+		},
 	})
 
 	type fields struct {

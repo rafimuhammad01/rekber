@@ -48,14 +48,14 @@ func (u User) GenerateToken() (Token, error) {
 }
 
 func (u User) generateAccessToken() (string, error) {
-	expiredAt := jwt.NewNumericDate(time.Now().Add(config.Get().AccessTokenDuration))
+	expiredAt := jwt.NewNumericDate(time.Now().Add(config.Get().JWT.AccessToken.Duration))
 	claims := Claims{
 		UserID:           u.ID.String(),
-		RegisteredClaims: jwt.RegisteredClaims{Issuer: config.Get().AppName, ExpiresAt: expiredAt},
+		RegisteredClaims: jwt.RegisteredClaims{Issuer: config.Get().App.Name, ExpiresAt: expiredAt},
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	signedToken, err := token.SignedString([]byte(config.Get().JWTAccessTokenSecretKey))
+	signedToken, err := token.SignedString([]byte(config.Get().JWT.AccessToken.SecretKey))
 	if err != nil {
 		return "", fmt.Errorf("failed to signed access token: %w ", err)
 	}
@@ -63,14 +63,14 @@ func (u User) generateAccessToken() (string, error) {
 }
 
 func (u User) generateRefreshToken() (string, error) {
-	expiredAt := jwt.NewNumericDate(time.Now().Add(config.Get().RefreshTokenDuration))
+	expiredAt := jwt.NewNumericDate(time.Now().Add(config.Get().JWT.RefreshToken.Duration))
 	claims := Claims{
-		RegisteredClaims: jwt.RegisteredClaims{Issuer: config.Get().AppName, ExpiresAt: expiredAt},
+		RegisteredClaims: jwt.RegisteredClaims{Issuer: config.Get().App.Name, ExpiresAt: expiredAt},
 		UserID:           u.ID.String(),
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	signedToken, err := token.SignedString([]byte(config.Get().JWTRefreshTokenSecretKey))
+	signedToken, err := token.SignedString([]byte(config.Get().JWT.RefreshToken.SecretKey))
 	if err != nil {
 		return "", fmt.Errorf("failed to signed JWT token: %w ", err)
 	}

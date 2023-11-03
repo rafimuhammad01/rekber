@@ -10,6 +10,7 @@ import (
 	"rekber/postgres"
 	otpRepository "rekber/postgres/otp"
 	userRepository "rekber/postgres/user"
+	"strconv"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
@@ -35,12 +36,12 @@ func main() {
 	config.SetFromFile("development")
 
 	db := postgres.InitDB(
-		config.Get().PSQLHost,
-		config.Get().PSQLPort,
-		config.Get().PSQLUserName,
-		config.Get().PSQLPassword,
-		config.Get().PSQLDBName,
-		config.Get().PSQLSSLMode,
+		config.Get().PSQL.Host,
+		strconv.Itoa(config.Get().PSQL.Port),
+		config.Get().PSQL.UserName,
+		config.Get().PSQL.Password,
+		config.Get().PSQL.DBName,
+		config.Get().PSQL.SSLMode,
 	)
 
 	app := fiber.New(fiber.Config{
@@ -48,22 +49,21 @@ func main() {
 		ErrorHandler: http.ErrorHandler,
 	})
 	app.Use(logger.New())
-
-	api := app.Group("/api")
-	v1 := api.Group("/v1")
-
-	v1.Get("/health", func(c *fiber.Ctx) error {
+	app.Get("/health", func(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusOK).JSON(fiber.Map{
 			"data": "OK",
 		})
 	})
+
+	api := app.Group("/api")
+	v1 := api.Group("/v1")
 
 	httpHandlers := initHTTPHandlers(db)
 	for _, v := range httpHandlers {
 		v.InitRouter(v1)
 	}
 
-	if err := app.Listen(fmt.Sprintf(":%s", config.Get().Port)); err != nil {
+	if err := app.Listen(fmt.Sprintf(":%s", config.Get().App.Port)); err != nil {
 		log.Fatalf("failed to start server: %v", err.Error())
 	}
 }

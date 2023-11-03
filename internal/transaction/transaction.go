@@ -89,9 +89,9 @@ func (t Transaction) VerifyLastStatus(updated Status) bool {
 	case waitingForPayment:
 		return (updated == paid) || (updated == expired)
 	case paid:
-		return (updated == doneBySeller)
+		return updated == doneBySeller
 	case doneBySeller:
-		return (updated == success)
+		return updated == success
 	default:
 		return false
 	}

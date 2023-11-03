@@ -27,10 +27,10 @@ func (h Handler) InitRouter(r fiber.Router) {
 	userGroup.Post("/login", h.Login)
 	userGroup.Post("/register", h.Register)
 	userGroup.Get("/restricted", h.AuthMiddleware, func(c *fiber.Ctx) error {
-		user := c.Locals("user-data").(user.User)
+		userData := c.Locals("userData-data").(user.User)
 
 		return c.Status(fiber.StatusOK).JSON(fiber.Map{
-			"test": "hello" + user.ID.String(),
+			"test": "hello" + userData.ID.String(),
 		})
 	})
 }
