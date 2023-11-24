@@ -3,7 +3,6 @@ package user
 import (
 	"context"
 	"fmt"
-	"rekber/internal/dto"
 	"time"
 
 	"github.com/google/uuid"
@@ -26,28 +25,28 @@ type Service struct {
 	repository    Repository
 }
 
-func (s Service) Login(ctx context.Context, req dto.LoginRequest) (dto.LoginResponse, error) {
-	if err := s.otpRepository.GetVerifiedOTP(ctx, req.PhoneNumber, int(dto.LoginState)); err != nil {
-		return dto.LoginResponse{}, fmt.Errorf("failed to verify otp: %w", err)
+func (s Service) Login(ctx context.Context, req LoginRequest) (LoginResponse, error) {
+	if err := s.otpRepository.GetVerifiedOTP(ctx, req.PhoneNumber, int(LoginState)); err != nil {
+		return LoginResponse{}, fmt.Errorf("failed to verify otp: %w", err)
 	}
 
 	user, err := s.repository.GetByPhoneNumber(ctx, req.PhoneNumber)
 	if err != nil {
-		return dto.LoginResponse{}, fmt.Errorf("failed to get user by phone number: %w", err)
+		return LoginResponse{}, fmt.Errorf("failed to get user by phone number: %w", err)
 	}
 
 	generatedToken, err := user.generateToken()
 	if err != nil {
-		return dto.LoginResponse{}, fmt.Errorf("failed to generate token: %w", err)
+		return LoginResponse{}, fmt.Errorf("failed to generate token: %w", err)
 	}
 
-	return dto.LoginResponse{
+	return LoginResponse{
 		AccessToken:  generatedToken.accessToken,
 		RefreshToken: generatedToken.refreshToken,
 	}, nil
 }
 
-func (s Service) VerifyOTP(ctx context.Context, req dto.VerifyOTP) error {
+func (s Service) VerifyOTP(ctx context.Context, req VerifyOTP) error {
 	if err := s.otpRepository.VerifyOTP(ctx, req.PhoneNumber, req.OTP, req.SessionInfo); err != nil {
 		return fmt.Errorf("failed to verify otp: %w", err)
 	}
@@ -59,19 +58,19 @@ func (s Service) VerifyOTP(ctx context.Context, req dto.VerifyOTP) error {
 	return nil
 }
 
-func (s Service) SendOTP(ctx context.Context, req dto.SendOTPRequest) (dto.SendOTPResponse, error) {
+func (s Service) SendOTP(ctx context.Context, req SendOTPRequest) (SendOTPResponse, error) {
 	sessionInfo, err := s.otpRepository.SendOTP(ctx, req.PhoneNumber, req.Captcha)
 	if err != nil {
-		return dto.SendOTPResponse{}, err
+		return SendOTPResponse{}, err
 	}
 
-	return dto.SendOTPResponse{
+	return SendOTPResponse{
 		SessionInfo: sessionInfo,
 	}, nil
 }
 
-func (s Service) Register(ctx context.Context, req dto.RegisterRequest) error {
-	if err := s.otpRepository.GetVerifiedOTP(ctx, req.PhoneNumber, int(dto.RegisterState)); err != nil {
+func (s Service) Register(ctx context.Context, req RegisterRequest) error {
+	if err := s.otpRepository.GetVerifiedOTP(ctx, req.PhoneNumber, int(RegisterState)); err != nil {
 		return fmt.Errorf("failed to get verified otp: %w", err)
 	}
 

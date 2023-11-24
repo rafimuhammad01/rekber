@@ -1,4 +1,4 @@
-package dto
+package user
 
 const (
 	RegisterState VerifyOTPState = iota + 1

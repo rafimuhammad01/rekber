@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	httpHandler "rekber/http"
-	"rekber/internal/dto"
 	"rekber/internal/user"
 	"rekber/middleware"
 
@@ -13,8 +12,8 @@ import (
 )
 
 type Service interface {
-	Login(ctx context.Context, req dto.LoginRequest) (dto.LoginResponse, error)
-	Register(ctx context.Context, req dto.RegisterRequest) error
+	Login(ctx context.Context, req user.LoginRequest) (user.LoginResponse, error)
+	Register(ctx context.Context, req user.RegisterRequest) error
 }
 
 type Handler struct {
@@ -35,7 +34,7 @@ func (h Handler) InitRouter(r fiber.Router) {
 }
 
 func (h Handler) Login(c *fiber.Ctx) error {
-	var req dto.LoginRequest
+	var req user.LoginRequest
 	if err := c.BodyParser(&req); err != nil {
 		return fmt.Errorf("failed to parse body: %w", err)
 	}
@@ -52,7 +51,7 @@ func (h Handler) Login(c *fiber.Ctx) error {
 }
 
 func (h Handler) Register(c *fiber.Ctx) error {
-	var req dto.RegisterRequest
+	var req user.RegisterRequest
 	if err := c.BodyParser(&req); err != nil {
 		return fmt.Errorf("failed to parse body: %w", err)
 	}
