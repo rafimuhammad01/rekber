@@ -14,6 +14,7 @@ require (
 )
 
 require (
+	github.com/agiledragon/gomonkey/v2 v2.11.0 // indirect
 	github.com/andybalholm/brotli v1.0.5 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect

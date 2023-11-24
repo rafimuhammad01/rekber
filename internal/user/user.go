@@ -30,32 +30,38 @@ type User struct {
 	CreatedAt             time.Time
 }
 
-func (u User) GenerateToken() (Token, error) {
+type token struct {
+	accessToken  string
+	refreshToken string
+}
+
+func (u User) generateToken() (token, error) {
 	accessToken, err := u.generateAccessToken()
 	if err != nil {
-		return Token{}, fmt.Errorf("failed to generate access token: %w", err)
+		return token{}, fmt.Errorf("failed to generate access token: %w", err)
 	}
 
 	refreshToken, err := u.generateRefreshToken()
 	if err != nil {
-		return Token{}, fmt.Errorf("failed to generate refresh token: %w", err)
+		return token{}, fmt.Errorf("failed to generate refresh token: %w", err)
 	}
 
-	return Token{
-		AccessToken:  accessToken,
-		RefreshToken: refreshToken,
+	return token{
+		accessToken:  accessToken,
+		refreshToken: refreshToken,
 	}, nil
 }
 
 func (u User) generateAccessToken() (string, error) {
 	expiredAt := jwt.NewNumericDate(time.Now().Add(config.Get().JWT.AccessToken.Duration))
-	claims := Claims{
-		UserID:           u.ID.String(),
-		RegisteredClaims: jwt.RegisteredClaims{Issuer: config.Get().App.Name, ExpiresAt: expiredAt},
+	claims := jwt.MapClaims{
+		"user_id": u.ID.String(),
+		"exp":     expiredAt,
+		"iss":     config.Get().App.Name,
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	signedToken, err := token.SignedString([]byte(config.Get().JWT.AccessToken.SecretKey))
+	t := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	signedToken, err := t.SignedString([]byte(config.Get().JWT.AccessToken.SecretKey))
 	if err != nil {
 		return "", fmt.Errorf("failed to signed access token: %w ", err)
 	}
@@ -64,13 +70,14 @@ func (u User) generateAccessToken() (string, error) {
 
 func (u User) generateRefreshToken() (string, error) {
 	expiredAt := jwt.NewNumericDate(time.Now().Add(config.Get().JWT.RefreshToken.Duration))
-	claims := Claims{
-		RegisteredClaims: jwt.RegisteredClaims{Issuer: config.Get().App.Name, ExpiresAt: expiredAt},
-		UserID:           u.ID.String(),
+	claims := jwt.MapClaims{
+		"user_id": u.ID.String(),
+		"exp":     expiredAt,
+		"iss":     config.Get().App.Name,
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	signedToken, err := token.SignedString([]byte(config.Get().JWT.RefreshToken.SecretKey))
+	t := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	signedToken, err := t.SignedString([]byte(config.Get().JWT.RefreshToken.SecretKey))
 	if err != nil {
 		return "", fmt.Errorf("failed to signed JWT token: %w ", err)
 	}

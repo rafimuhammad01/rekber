@@ -10,8 +10,8 @@ import (
 )
 
 type OTPRepository interface {
-	VerifyOTP(ctx context.Context, phoneNumber, otp string) error
-	SendOTP(ctx context.Context, phoneNumber string) error
+	VerifyOTP(ctx context.Context, phoneNumber, otp, sessionInfo string) error
+	SendOTP(ctx context.Context, phoneNumber, captcha string) (string, error)
 	SaveVerifiedOTP(ctx context.Context, phoneNumber string, state int) error
 	GetVerifiedOTP(ctx context.Context, phoneNumber string, state int) error
 }
@@ -27,7 +27,7 @@ type Service struct {
 }
 
 func (s Service) Login(ctx context.Context, req dto.LoginRequest) (dto.LoginResponse, error) {
-	if err := s.otpRepository.VerifyOTP(ctx, req.PhoneNumber, req.OTP); err != nil {
+	if err := s.otpRepository.GetVerifiedOTP(ctx, req.PhoneNumber, int(dto.LoginState)); err != nil {
 		return dto.LoginResponse{}, fmt.Errorf("failed to verify otp: %w", err)
 	}
 
@@ -36,19 +36,19 @@ func (s Service) Login(ctx context.Context, req dto.LoginRequest) (dto.LoginResp
 		return dto.LoginResponse{}, fmt.Errorf("failed to get user by phone number: %w", err)
 	}
 
-	token, err := user.GenerateToken()
+	generatedToken, err := user.generateToken()
 	if err != nil {
 		return dto.LoginResponse{}, fmt.Errorf("failed to generate token: %w", err)
 	}
 
 	return dto.LoginResponse{
-		AccessToken:  token.AccessToken,
-		RefreshToken: token.RefreshToken,
+		AccessToken:  generatedToken.accessToken,
+		RefreshToken: generatedToken.refreshToken,
 	}, nil
 }
 
 func (s Service) VerifyOTP(ctx context.Context, req dto.VerifyOTP) error {
-	if err := s.otpRepository.VerifyOTP(ctx, req.PhoneNumber, req.OTP); err != nil {
+	if err := s.otpRepository.VerifyOTP(ctx, req.PhoneNumber, req.OTP, req.SessionInfo); err != nil {
 		return fmt.Errorf("failed to verify otp: %w", err)
 	}
 
@@ -59,8 +59,15 @@ func (s Service) VerifyOTP(ctx context.Context, req dto.VerifyOTP) error {
 	return nil
 }
 
-func (s Service) SendOTP(ctx context.Context, req dto.SendOTPRequest) error {
-	return nil
+func (s Service) SendOTP(ctx context.Context, req dto.SendOTPRequest) (dto.SendOTPResponse, error) {
+	sessionInfo, err := s.otpRepository.SendOTP(ctx, req.PhoneNumber, req.Captcha)
+	if err != nil {
+		return dto.SendOTPResponse{}, err
+	}
+
+	return dto.SendOTPResponse{
+		SessionInfo: sessionInfo,
+	}, nil
 }
 
 func (s Service) Register(ctx context.Context, req dto.RegisterRequest) error {

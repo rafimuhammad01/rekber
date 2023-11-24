@@ -1,9 +1,10 @@
-package user
+package middleware
 
 import (
 	"encoding/base64"
 	"reflect"
 	"rekber/config"
+	"rekber/internal/user"
 	"testing"
 	"time"
 
@@ -45,12 +46,10 @@ func TestToken_validateAccessToken(t *testing.T) {
 					"alg": "HS256",
 					"typ": "JWT",
 				},
-				Claims: &Claims{
-					RegisteredClaims: jwt.RegisteredClaims{
-						ExpiresAt: jwt.NewNumericDate(time.Unix(2548627200, 0)),
-						Issuer:    "testing-app",
-					},
-					UserID: "e41f16ef-0530-42ed-8b02-4ae2fa4c4dc2",
+				Claims: jwt.MapClaims{
+					"exp":     2.5486272e+09,
+					"user_id": "e41f16ef-0530-42ed-8b02-4ae2fa4c4dc2",
+					"iss":     "testing-app",
 				},
 				Signature: secretDecoded,
 				Valid:     true,
@@ -60,18 +59,18 @@ func TestToken_validateAccessToken(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tr := Token{
-				AccessToken:  tt.fields.AccessToken,
-				RefreshToken: tt.fields.RefreshToken,
+			tr := token{
+				accessToken:  tt.fields.AccessToken,
+				refreshToken: tt.fields.RefreshToken,
 			}
 
 			got, err := tr.validateAccessToken()
 			if (err != nil) != tt.wantErr {
-				t.Errorf("Token.validateAccessToken() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("token.validateAccessToken() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Token.validateAccessToken() = %#v, want %#v", got, tt.want)
+				t.Errorf("token.validateAccessToken() = %#v, want %#v", got, tt.want)
 			}
 		})
 	}
@@ -94,7 +93,7 @@ func TestToken_ParseAccessToken(t *testing.T) {
 	tests := []struct {
 		name    string
 		fields  fields
-		want    User
+		want    user.User
 		wantErr bool
 	}{
 		{
@@ -102,7 +101,7 @@ func TestToken_ParseAccessToken(t *testing.T) {
 			fields: fields{
 				AccessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0aW5nLWFwcCIsImV4cCI6MjU0ODYyNzIwMCwidXNlcl9pZCI6ImU0MWYxNmVmLTA1MzAtNDJlZC04YjAyLTRhZTJmYTRjNGRjMiJ9.vtV-qYPVoJ8dCEoR98aBr5XsA0gsJwkvQdRpzY7UQQU",
 			},
-			want: User{
+			want: user.User{
 				ID: uuid.MustParse("e41f16ef-0530-42ed-8b02-4ae2fa4c4dc2"),
 			},
 			wantErr: false,
@@ -110,17 +109,17 @@ func TestToken_ParseAccessToken(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tr := Token{
-				AccessToken:  tt.fields.AccessToken,
-				RefreshToken: tt.fields.RefreshToken,
+			tr := token{
+				accessToken:  tt.fields.AccessToken,
+				refreshToken: tt.fields.RefreshToken,
 			}
-			got, err := tr.ParseAccessToken()
+			got, err := tr.parseAccessToken()
 			if (err != nil) != tt.wantErr {
-				t.Errorf("Token.ParseAccessToken() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("token.parseAccessToken() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Token.ParseAccessToken() = %v, want %v", got, tt.want)
+				t.Errorf("token.parseAccessToken() = %#v, want %#v", got, tt.want)
 			}
 		})
 	}
@@ -159,12 +158,10 @@ func TestToken_validateRefreshToken(t *testing.T) {
 					"alg": "HS256",
 					"typ": "JWT",
 				},
-				Claims: &Claims{
-					RegisteredClaims: jwt.RegisteredClaims{
-						ExpiresAt: jwt.NewNumericDate(time.Unix(2548627200, 0)),
-						Issuer:    "testing-app",
-					},
-					UserID: "e41f16ef-0530-42ed-8b02-4ae2fa4c4dc2",
+				Claims: jwt.MapClaims{
+					"exp":     2.5486272e+09,
+					"user_id": "e41f16ef-0530-42ed-8b02-4ae2fa4c4dc2",
+					"iss":     "testing-app",
 				},
 				Signature: secretDecoded,
 				Valid:     true,
@@ -174,17 +171,17 @@ func TestToken_validateRefreshToken(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tr := Token{
-				AccessToken:  tt.fields.AccessToken,
-				RefreshToken: tt.fields.RefreshToken,
+			tr := token{
+				accessToken:  tt.fields.AccessToken,
+				refreshToken: tt.fields.RefreshToken,
 			}
 			got, err := tr.validateRefreshToken()
 			if (err != nil) != tt.wantErr {
-				t.Errorf("Token.validateRefreshToken() error = %#v, wantErr %#v", err, tt.wantErr)
+				t.Errorf("token.validateRefreshToken() error = %#v, wantErr %#v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Token.validateRefreshToken() = %#v, want %#v", got, tt.want)
+				t.Errorf("token.validateRefreshToken() = %#v, want %#v", got, tt.want)
 			}
 		})
 	}
@@ -207,7 +204,7 @@ func TestToken_ParseRefreshToken(t *testing.T) {
 	tests := []struct {
 		name    string
 		fields  fields
-		want    User
+		want    user.User
 		wantErr bool
 	}{
 		{
@@ -215,7 +212,7 @@ func TestToken_ParseRefreshToken(t *testing.T) {
 			fields: fields{
 				RefreshToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0aW5nLWFwcCIsImV4cCI6MjU0ODYyNzIwMCwidXNlcl9pZCI6ImU0MWYxNmVmLTA1MzAtNDJlZC04YjAyLTRhZTJmYTRjNGRjMiJ9.vtV-qYPVoJ8dCEoR98aBr5XsA0gsJwkvQdRpzY7UQQU",
 			},
-			want: User{
+			want: user.User{
 				ID: uuid.MustParse("e41f16ef-0530-42ed-8b02-4ae2fa4c4dc2"),
 			},
 			wantErr: false,
@@ -223,17 +220,17 @@ func TestToken_ParseRefreshToken(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tr := Token{
-				AccessToken:  tt.fields.AccessToken,
-				RefreshToken: tt.fields.RefreshToken,
+			tr := token{
+				accessToken:  tt.fields.AccessToken,
+				refreshToken: tt.fields.RefreshToken,
 			}
-			got, err := tr.ParseRefreshToken()
+			got, err := tr.parseRefreshToken()
 			if (err != nil) != tt.wantErr {
-				t.Errorf("Token.ParseRefreshToken() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("token.parseRefreshToken() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Token.ParseRefreshToken() = %v, want %v", got, tt.want)
+				t.Errorf("token.parseRefreshToken() = %v, want %v", got, tt.want)
 			}
 		})
 	}

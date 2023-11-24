@@ -13,9 +13,10 @@ var (
 
 type (
 	Config struct {
-		App  AppConfig  `mapstructure:"app"`
-		JWT  JWTConfig  `mapstructure:"jwt"`
-		PSQL PSQLConfig `mapstructure:"psql"`
+		App      AppConfig  `mapstructure:"app"`
+		JWT      JWTConfig  `mapstructure:"jwt"`
+		PSQL     PSQLConfig `mapstructure:"psql"`
+		Firebase Firebase   `mapstructure:"firebase"`
 	}
 
 	AppConfig struct {
@@ -40,6 +41,11 @@ type (
 		Password string `mapstructure:"password"`
 		DBName   string `mapstructure:"db_name"`
 		SSLMode  string `mapstructure:"ssl_mode"`
+	}
+
+	Firebase struct {
+		APIKey  string `mapstructure:"api_key"`
+		AuthURL string `mapstructure:"url"`
 	}
 )
 

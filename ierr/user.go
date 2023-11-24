@@ -34,3 +34,19 @@ func (u JWTError) HTTPMessage() string {
 func (u JWTError) HTTPStatusCode() int {
 	return http.StatusUnauthorized
 }
+
+type UserForbiddenAccess struct {
+	PhoneNumber string `json:"phone_number"`
+}
+
+func (u UserForbiddenAccess) Error() string {
+	return fmt.Sprintf("user with phone number %s forbidden to access", u.PhoneNumber)
+}
+
+func (u UserForbiddenAccess) HTTPStatusCode() int {
+	return http.StatusForbidden
+}
+
+func (u UserForbiddenAccess) HTTPMessage() string {
+	return u.Error()
+}

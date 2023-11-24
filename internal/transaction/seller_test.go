@@ -1,11 +1,11 @@
 package transaction
 
 import (
-	"github.com/agiledragon/gomonkey"
 	"reflect"
 	"testing"
 	"time"
 
+	"github.com/agiledragon/gomonkey/v2"
 	"github.com/google/uuid"
 )
 

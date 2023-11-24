@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"log"
 	"rekber/config"
+	"rekber/firebase"
 	"rekber/http"
 	userHandlerHTTP "rekber/http/user"
 	userService "rekber/internal/user"
 	"rekber/postgres"
-	otpRepository "rekber/postgres/otp"
 	userRepository "rekber/postgres/user"
 	"strconv"
 
@@ -22,9 +22,9 @@ type HTTPHandler interface {
 }
 
 func initHTTPHandlers(db *sqlx.DB) []HTTPHandler {
-	otpRepo := otpRepository.NewRepository()
+	fbClient := firebase.NewClient(config.Get().Firebase.APIKey, config.Get().Firebase.AuthURL)
 	userRepo := userRepository.NewRepository(db)
-	userSvc := userService.NewService(userRepo, otpRepo)
+	userSvc := userService.NewService(userRepo, fbClient)
 	userHandler := userHandlerHTTP.NewHandler(userSvc)
 
 	return []HTTPHandler{

@@ -1,12 +1,12 @@
 package user
 
 import (
-	"github.com/agiledragon/gomonkey"
 	"reflect"
 	"rekber/config"
 	"testing"
 	"time"
 
+	"github.com/agiledragon/gomonkey/v2"
 	"github.com/google/uuid"
 )
 
@@ -51,7 +51,7 @@ func TestUser_generateAccessToken(t *testing.T) {
 				PhoneNumber:           "8121313231",
 				PhoneNumberVerifiedAt: time.Now(),
 			},
-			want:    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0aW5nLWFwcCIsImV4cCI6MTY5NjExMTIwMCwidXNlcl9pZCI6ImU0MWYxNmVmLTA1MzAtNDJlZC04YjAyLTRhZTJmYTRjNGRjMiJ9.hgxn0WtzqGtZb1mFCjrJ3zqq3Wg_u4fhoziVAo_5hWc",
+			want:    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTYxMTEyMDAsImlzcyI6InRlc3RpbmctYXBwIiwidXNlcl9pZCI6ImU0MWYxNmVmLTA1MzAtNDJlZC04YjAyLTRhZTJmYTRjNGRjMiJ9.i963oz4Tu0tve6TQCYLqDlhjOFryktRNzxJ7iA6QlBs",
 			wantErr: false,
 		},
 	}
@@ -119,7 +119,7 @@ func TestUser_generateRefreshToken(t *testing.T) {
 				PhoneNumber:           "8121313231",
 				PhoneNumberVerifiedAt: time.Now(),
 			},
-			want:    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0aW5nLWFwcCIsImV4cCI6MTY5NjExMTIwMCwidXNlcl9pZCI6ImU0MWYxNmVmLTA1MzAtNDJlZC04YjAyLTRhZTJmYTRjNGRjMiJ9.hgxn0WtzqGtZb1mFCjrJ3zqq3Wg_u4fhoziVAo_5hWc",
+			want:    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTYxMTEyMDAsImlzcyI6InRlc3RpbmctYXBwIiwidXNlcl9pZCI6ImU0MWYxNmVmLTA1MzAtNDJlZC04YjAyLTRhZTJmYTRjNGRjMiJ9.i963oz4Tu0tve6TQCYLqDlhjOFryktRNzxJ7iA6QlBs",
 			wantErr: false,
 		},
 	}
@@ -181,7 +181,7 @@ func TestUser_GenerateToken(t *testing.T) {
 	tests := []struct {
 		name    string
 		fields  fields
-		want    Token
+		want    token
 		wantErr bool
 	}{
 		// TODO: Add test cases.
@@ -192,9 +192,9 @@ func TestUser_GenerateToken(t *testing.T) {
 				PhoneNumber:           "8121313231",
 				PhoneNumberVerifiedAt: time.Now(),
 			},
-			want: Token{
-				AccessToken:  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0aW5nLWFwcCIsImV4cCI6MTY5NjExMTIwMCwidXNlcl9pZCI6ImU0MWYxNmVmLTA1MzAtNDJlZC04YjAyLTRhZTJmYTRjNGRjMiJ9.hgxn0WtzqGtZb1mFCjrJ3zqq3Wg_u4fhoziVAo_5hWc",
-				RefreshToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0aW5nLWFwcCIsImV4cCI6MTY5NjExMTIwMCwidXNlcl9pZCI6ImU0MWYxNmVmLTA1MzAtNDJlZC04YjAyLTRhZTJmYTRjNGRjMiJ9.hgxn0WtzqGtZb1mFCjrJ3zqq3Wg_u4fhoziVAo_5hWc",
+			want: token{
+				accessToken:  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTYxMTEyMDAsImlzcyI6InRlc3RpbmctYXBwIiwidXNlcl9pZCI6ImU0MWYxNmVmLTA1MzAtNDJlZC04YjAyLTRhZTJmYTRjNGRjMiJ9.i963oz4Tu0tve6TQCYLqDlhjOFryktRNzxJ7iA6QlBs",
+				refreshToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTYxMTEyMDAsImlzcyI6InRlc3RpbmctYXBwIiwidXNlcl9pZCI6ImU0MWYxNmVmLTA1MzAtNDJlZC04YjAyLTRhZTJmYTRjNGRjMiJ9.i963oz4Tu0tve6TQCYLqDlhjOFryktRNzxJ7iA6QlBs",
 			},
 			wantErr: false,
 		},
@@ -207,13 +207,13 @@ func TestUser_GenerateToken(t *testing.T) {
 				PhoneNumberVerifiedAt: tt.fields.PhoneNumberVerifiedAt,
 				BankAccount:           tt.fields.BankAccount,
 			}
-			got, err := u.GenerateToken()
+			got, err := u.generateToken()
 			if (err != nil) != tt.wantErr {
-				t.Errorf("User.GenerateToken() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("User.generateToken() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("User.GenerateToken() = %v, want %v", got, tt.want)
+				t.Errorf("User.generateToken() = %v, want %v", got, tt.want)
 			}
 		})
 	}

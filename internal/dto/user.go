@@ -2,11 +2,11 @@ package dto
 
 const (
 	RegisterState VerifyOTPState = iota + 1
+	LoginState
 )
 
 type LoginRequest struct {
 	PhoneNumber string `json:"phone_number"`
-	OTP         string `json:"otp"`
 }
 
 type LoginResponse struct {
@@ -16,6 +16,11 @@ type LoginResponse struct {
 
 type SendOTPRequest struct {
 	PhoneNumber string `json:"phone_number"`
+	Captcha     string `json:"captcha"`
+}
+
+type SendOTPResponse struct {
+	SessionInfo string `json:"session_info"`
 }
 
 type VerifyOTPState int
@@ -24,6 +29,7 @@ type VerifyOTP struct {
 	PhoneNumber string         `json:"phone_number"`
 	OTP         string         `json:"otp"`
 	State       VerifyOTPState `json:"state"`
+	SessionInfo string         `json:"session_info"`
 }
 
 type RegisterRequest struct {

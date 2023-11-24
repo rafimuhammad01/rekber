@@ -1,5 +1,5 @@
 test:
-	GOARCH=amd64 go test -coverprofile cover.out -v ./...
+	go test -coverprofile cover.out -v ./...
 
 migrate-up:
 	migrate -database postgres://postgres:rekberapp@localhost:5432/postgres?sslmode=disable -path postgres/migrations up $(count)
