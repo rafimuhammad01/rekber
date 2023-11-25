@@ -124,7 +124,7 @@ func TestToken_validateAccessToken(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "success validateToken",
+			name: "success validate",
 			fields: fields{
 				token:  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0aW5nLWFwcCIsImV4cCI6MjU0ODYyNzIwMCwidXNlcl9pZCI6ImU0MWYxNmVmLTA1MzAtNDJlZC04YjAyLTRhZTJmYTRjNGRjMiJ9.vtV-qYPVoJ8dCEoR98aBr5XsA0gsJwkvQdRpzY7UQQU",
 				secret: "test-secret-key",
@@ -149,7 +149,7 @@ func TestToken_validateAccessToken(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := validateToken(tt.fields.token, tt.fields.secret)
+			got, err := validate(tt.fields.token, tt.fields.secret)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("token.validateAccessToken() error = %v, wantErr %v", err, tt.wantErr)
 				return

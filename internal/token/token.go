@@ -16,7 +16,7 @@ type Token struct {
 }
 
 func (t Token) ParseAccessToken() (user.User, error) {
-	jwtToken, err := validateToken(t.accessToken, config.Get().JWT.AccessToken.SecretKey)
+	jwtToken, err := validate(t.accessToken, config.Get().JWT.AccessToken.SecretKey)
 	if err != nil {
 		return user.User{}, fmt.Errorf("failed to validate access token: %w", err)
 	}
@@ -37,7 +37,7 @@ func (t Token) ParseAccessToken() (user.User, error) {
 }
 
 func (t Token) ParseRefreshToken() (user.User, error) {
-	jwtToken, err := validateToken(t.refreshToken, config.Get().JWT.RefreshToken.SecretKey)
+	jwtToken, err := validate(t.refreshToken, config.Get().JWT.RefreshToken.SecretKey)
 	if err != nil {
 		return user.User{}, fmt.Errorf("failed to validate refresh token: %w", err)
 	}
@@ -57,7 +57,7 @@ func (t Token) ParseRefreshToken() (user.User, error) {
 	}, nil
 }
 
-func validateToken(token, secretKey string) (*jwt.Token, error) {
+func validate(token, secretKey string) (*jwt.Token, error) {
 	tokenParsed, err := jwt.Parse(token, func(t *jwt.Token) (interface{}, error) {
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, ierr.JWTError{}
