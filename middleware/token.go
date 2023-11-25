@@ -10,28 +10,13 @@ import (
 	"github.com/google/uuid"
 )
 
-type token struct {
+type Token struct {
 	accessToken  string
 	refreshToken string
 }
 
-func (t token) validateAccessToken() (*jwt.Token, error) {
-	tokenParsed, err := jwt.Parse(t.accessToken, func(t *jwt.Token) (interface{}, error) {
-		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, ierr.JWTError{}
-		}
-
-		return []byte(config.Get().JWT.AccessToken.SecretKey), nil
-	})
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse refresh token: %w", ierr.JWTError{})
-	}
-
-	return tokenParsed, nil
-}
-
-func (t token) parseAccessToken() (user.User, error) {
-	jwtToken, err := t.validateAccessToken()
+func (t Token) ParseAccessToken() (user.User, error) {
+	jwtToken, err := validateToken(t.accessToken, config.Get().JWT.AccessToken.SecretKey)
 	if err != nil {
 		return user.User{}, fmt.Errorf("failed to validate access token: %w", err)
 	}
@@ -51,23 +36,8 @@ func (t token) parseAccessToken() (user.User, error) {
 	}, nil
 }
 
-func (t token) validateRefreshToken() (*jwt.Token, error) {
-	tokenParsed, err := jwt.Parse(t.refreshToken, func(t *jwt.Token) (interface{}, error) {
-		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, ierr.JWTError{}
-		}
-
-		return []byte(config.Get().JWT.RefreshToken.SecretKey), nil
-	})
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse refresh token: %w", ierr.JWTError{})
-	}
-
-	return tokenParsed, nil
-}
-
-func (t token) parseRefreshToken() (user.User, error) {
-	jwtToken, err := t.validateRefreshToken()
+func (t Token) ParseRefreshToken() (user.User, error) {
+	jwtToken, err := validateToken(t.refreshToken, config.Get().JWT.RefreshToken.SecretKey)
 	if err != nil {
 		return user.User{}, fmt.Errorf("failed to validate refresh token: %w", err)
 	}
@@ -85,4 +55,37 @@ func (t token) parseRefreshToken() (user.User, error) {
 	return user.User{
 		ID: uuid.MustParse(userID),
 	}, nil
+}
+
+func validateToken(token, secretKey string) (*jwt.Token, error) {
+	tokenParsed, err := jwt.Parse(token, func(t *jwt.Token) (interface{}, error) {
+		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, ierr.JWTError{}
+		}
+
+		return []byte(secretKey), nil
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse token: %w", ierr.JWTError{})
+	}
+
+	return tokenParsed, nil
+}
+
+type Options func(token *Token)
+
+func NewToken(options ...Options) *Token {
+	t := &Token{}
+
+	for _, opt := range options {
+		opt(t)
+	}
+
+	return t
+}
+
+func WithAccessToken(t string) Options {
+	return func(token *Token) {
+		token.accessToken = t
+	}
 }

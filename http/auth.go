@@ -1,7 +1,8 @@
-package middleware
+package http
 
 import (
 	"rekber/ierr"
+	"rekber/middleware"
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
@@ -22,11 +23,8 @@ func AuthMiddleware(c *fiber.Ctx) error {
 		return ierr.TokenIsNotProvided{}
 	}
 
-	t := token{
-		accessToken: receiveToken[1],
-	}
-
-	userData, err := t.parseAccessToken()
+	t := middleware.NewToken(middleware.WithAccessToken(receiveToken[1]))
+	userData, err := t.ParseAccessToken()
 	if err != nil {
 		return err
 	}

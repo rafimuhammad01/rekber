@@ -63,9 +63,22 @@ func (c *Client) GetVerifiedOTP(ctx context.Context, phoneNumber string, state i
 	return nil
 }
 
-func NewClient(APIKey string, authURL string) *Client {
-	return &Client{
-		auth:  auth.NewClient(APIKey, authURL),
+func NewClient(APIKey string, options ...Options) *Client {
+	c := Client{
 		cache: make(map[string]interface{}),
+	}
+
+	for _, opt := range options {
+		opt(APIKey, &c)
+	}
+
+	return &c
+}
+
+type Options func(APIKey string, c *Client)
+
+func WithAuth(authURL string) Options {
+	return func(APIKey string, c *Client) {
+		c.auth = auth.NewClient(APIKey, authURL)
 	}
 }

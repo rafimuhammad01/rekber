@@ -22,7 +22,7 @@ type HTTPHandler interface {
 }
 
 func initHTTPHandlers(db *sqlx.DB) []HTTPHandler {
-	fbClient := firebase.NewClient(config.Get().Firebase.APIKey, config.Get().Firebase.AuthURL)
+	fbClient := firebase.NewClient(config.Get().Firebase.APIKey, firebase.WithAuth(config.Get().Firebase.AuthURL))
 	userRepo := userRepository.NewRepository(db)
 	userSvc := userService.NewService(userRepo, fbClient)
 	userHandler := userHandlerHTTP.NewHandler(userSvc)

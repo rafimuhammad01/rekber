@@ -16,7 +16,7 @@ func InitDB(dbHost, dbPort, dbUser, dbPassword, dbName, dbSSLMode string) *sqlx.
 		log.Fatalf("failed to connect to postgreSQL: %v", err.Error())
 	}
 
-	if err := db.Ping(); err != nil {
+	if err = db.Ping(); err != nil {
 		log.Fatalf("failed to ping to postgreSQL: %v", err.Error())
 	}
 

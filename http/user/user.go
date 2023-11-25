@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"net/http"
 	httpHandler "rekber/http"
+	internalHttp "rekber/http"
 	"rekber/internal/user"
-	"rekber/middleware"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -24,7 +24,7 @@ func (h Handler) InitRouter(r fiber.Router) {
 	userGroup := r.Group("/user")
 	userGroup.Post("/login", h.Login)
 	userGroup.Post("/register", h.Register)
-	userGroup.Get("/restricted", middleware.AuthMiddleware, func(c *fiber.Ctx) error {
+	userGroup.Get("/restricted", internalHttp.AuthMiddleware, func(c *fiber.Ctx) error {
 		userData := c.Locals("userData-data").(user.User)
 
 		return c.Status(fiber.StatusOK).JSON(fiber.Map{
