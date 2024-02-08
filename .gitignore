@@ -22,3 +22,6 @@ go.work
 
 # ide file
 .idea
+
+# env config
+config/staging.yaml

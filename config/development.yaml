@@ -17,3 +17,7 @@ psql:
   user_name: "postgres"
   password: "rekberapp"
   ssl_mode: "disable"
+
+firebase_otp:
+  api_key: ""
+  auth_url: "https://identitytoolkit.googleapis.com/v1/accounts"
